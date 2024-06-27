@@ -1,8 +1,10 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Student;
-import ru.hogwarts.school.service.StudentService;
+import ru.hogwarts.school.service.StudentServiceImpl;
 
 import java.util.List;
 
@@ -10,15 +12,19 @@ import java.util.List;
 @RequestMapping("students")
 public class StudentController {
 
-    private final StudentService studentService;
+    private final StudentServiceImpl studentService;
 
-    public StudentController(StudentService studentService) {
+    public StudentController(StudentServiceImpl studentService) {
         this.studentService = studentService;
     }
 
     @GetMapping("{id}")
-    public Student getStudent(@PathVariable Long id) {
-        return studentService.getStudent(id);
+    public ResponseEntity<Student> getStudent(@PathVariable Long id) {
+        Student student = studentService.getStudent(id);
+        if (student == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(student);
     }
 
     @PostMapping
@@ -26,14 +32,19 @@ public class StudentController {
         return studentService.addStudent(student);
     }
 
-    @PutMapping()
-    public Student updateStudent(@RequestBody Student student) {
-        return studentService.updateStudent(student);
+    @PutMapping("{id}")
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student student) {
+        Student updatedStudent = studentService.updateStudent(id, student);
+        if (updatedStudent == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(updatedStudent);
     }
 
-    @DeleteMapping
-    public Student deleteStudent(@RequestBody Student student) {
-        return studentService.removeStudent(student);
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+        studentService.deleteStudent(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping

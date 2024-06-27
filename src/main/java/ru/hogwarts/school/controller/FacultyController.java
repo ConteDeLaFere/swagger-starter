@@ -1,5 +1,7 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.service.FacultyService;
@@ -17,8 +19,12 @@ public class FacultyController {
     }
 
     @GetMapping("{id}")
-    public Faculty getFaculty(@PathVariable Long id) {
-        return facultyService.getFaculty(id);
+    public ResponseEntity<Faculty> getFaculty(@PathVariable Long id) {
+        Faculty faculty = facultyService.getFaculty(id);
+        if (faculty == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(faculty);
     }
 
     @PostMapping
@@ -26,14 +32,19 @@ public class FacultyController {
         return facultyService.addFaculty(faculty);
     }
 
-    @PutMapping
-    public Faculty updateFaculty(@RequestBody Faculty faculty) {
-        return facultyService.updateFaculty(faculty);
+    @PutMapping("{id}")
+    public ResponseEntity<Faculty> updateFaculty(@PathVariable Long id, @RequestBody Faculty faculty) {
+        Faculty facultyToUpdate = facultyService.updateFaculty(id, faculty);
+        if (facultyToUpdate == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(facultyToUpdate);
     }
 
-    @DeleteMapping
-    public void deleteFaculty(@RequestBody Faculty faculty) {
-        facultyService.removeFaculty(faculty);
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteFaculty(@PathVariable Long id) {
+        facultyService.deleteFaculty(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
@@ -42,7 +53,7 @@ public class FacultyController {
     }
 
     @GetMapping("color/{color}")
-    public List<Faculty> getFacultyByColor(@PathVariable String color) {
+    public List<Faculty> getFacultiesByColor(@PathVariable String color) {
         return facultyService.getFacultiesByColor(color);
     }
 
