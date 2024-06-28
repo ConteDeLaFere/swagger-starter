@@ -4,7 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
-import lombok.Data;;
+import jakarta.persistence.OneToMany;
+import lombok.Data;
+
+import java.util.Collection;
+
 
 @Data
 @Entity
@@ -16,4 +20,8 @@ public class Faculty {
 
     private String name;
     private String color;
+
+    @OneToMany(mappedBy = "faculty")
+    private Collection<Student> students;
+
 }
