@@ -6,7 +6,6 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public class FacultyServiceImpl implements FacultyService {
@@ -48,6 +47,10 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Collection<Student> getStudentsByFaculty(Long id) {
+        Faculty faculty = getFaculty(id);
+        if (faculty == null) {
+            return null;
+        }
         return getFaculty(id).getStudents();
     }
 }
